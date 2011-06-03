@@ -1,15 +1,11 @@
 package Sources;
 public class Main {
 
-	public Main() {
-		// TODO Auto-generated constructor stub
-	}
+	public Main() {}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-        Mediator map = new Mediator();
+        @SuppressWarnings("unused")
+		Mediator map = new Mediator();
 	}
 
 }
