@@ -20,11 +20,6 @@ public class MediatorListar implements ActionListener {
 		this.userID=userID;
 		dataBase = new DataBasePosgreSQL();
 		GraphicUserInterface = new ListarGUI();
-//		try {
-//			GraphicUserInterface.setJList(dataBase.getList(userID));
-//		} catch (SQLException e) {
-//			System.out.println("Error al cargar los usuarios: "+e);
-//		}
 		GraphicUserInterface.setActionListeners(this);
         show();
 	}
@@ -42,11 +37,11 @@ public class MediatorListar implements ActionListener {
             	if(idCarpeta.length()==0){
             		JOptionPane.showMessageDialog(new JFrame(),"No ha ingresado un id carpeta","",JOptionPane.ERROR_MESSAGE);
             	}
-            	//puede este usuario listar esta carpeta
             	if (!(dataBase.dueno(userID,idCarpeta))){
             		JOptionPane.showMessageDialog(new JFrame(),"No existe la carpeta","",JOptionPane.ERROR_MESSAGE);
-				}else{Vector<String> listas = dataBase.getList(idCarpeta);
-				GraphicUserInterface.setJList(listas);
+				}else{
+					Vector<String> listas = dataBase.getList(idCarpeta);
+					GraphicUserInterface.setJList(listas);
 				}
 			}catch(Exception q) {
         		System.out.println("Error en MediadorListar: "+q);

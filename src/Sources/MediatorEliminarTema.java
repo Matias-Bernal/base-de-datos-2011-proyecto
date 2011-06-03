@@ -35,10 +35,13 @@ public class MediatorEliminarTema implements ActionListener{
 				if(idLista.length()==0||pathTema.length()==0){
 					JOptionPane.showMessageDialog(new JFrame(),"Alguno de los campos obligatorios estan vacio","",JOptionPane.ERROR_MESSAGE);
 				}else{
-					//resvisar que los datos sean correctos para evitar que la base de datos de exepciones
-					dataBase.eliminarTema(userID,idLista,pathTema);
-					JOptionPane.showMessageDialog(new JFrame(),"Tema Eliminado","",JOptionPane.ERROR_MESSAGE);
-					GraphicUserInterface.reset();
+					if (!(dataBase.duenoLista(userID,idLista))){
+	            		JOptionPane.showMessageDialog(new JFrame(),"No existe la lista","",JOptionPane.ERROR_MESSAGE);
+					}else{
+						dataBase.eliminarTema(userID,idLista,pathTema);
+						JOptionPane.showMessageDialog(new JFrame(),"Tema Eliminado","",JOptionPane.ERROR_MESSAGE);
+						GraphicUserInterface.reset();
+					}
 				}
 			}catch(Exception q) {
         		System.out.println("Error en MediadorEliminar: "+q);

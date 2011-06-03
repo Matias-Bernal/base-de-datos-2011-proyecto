@@ -41,7 +41,7 @@ public class AltaUsuarioGUI extends JFrame{
 			jPanelPrincipal.setLayout(null);
 			jPanelPrincipal.add(getjButtonCancelar(), null);
 			jPanelPrincipal.add(getJButtonCrear(), null);
-			jPanelPrincipal.add(getJtfNombreUsuario(), null);
+			jPanelPrincipal.add(getJtfNombreUsuario(),null);
 		}
 		return jPanelPrincipal;
 	}

@@ -104,7 +104,7 @@ public class MainMenuGUI extends JFrame{
 		public JButton getJButtonListar() {
 			if (jButtonListar == null) {
 				jButtonListar = new JButton();
-				jButtonListar.setText("LISTAR TEMAS");
+				jButtonListar.setText("LISTAS");
 				jButtonListar.setBounds(new Rectangle(75, 150, 250, 45));
 			}
 			return jButtonListar;
