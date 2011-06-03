@@ -74,8 +74,8 @@ CREATE TABLE Plarpebu.CARPETA (
 		nombreCarpeta varchar(40) NOT NULL,
 		id_carpetaPadre int,
 		CONSTRAINT pk_carpeta PRIMARY KEY (id_carpeta),
-		CONSTRAINT ctl_carpeta CHECK (id_carpeta<>id_carpetaPadre)
-		--CONSTRAINT ctl_nombre_carpeta UNIQUE (id_carpetaPadre,nombreCarpeta)
+		CONSTRAINT ctl_carpeta CHECK (id_carpeta<>id_carpetaPadre),
+		CONSTRAINT ctl_nombre_carpetaPadre UNIQUE (id_carpetaPadre,nombreCarpeta)
 );
 
 ALTER TABLE Plarpebu.CARPETA ADD CONSTRAINT fk_id_carpetaPadre FOREIGN KEY (id_carpetaPadre) REFERENCES Plarpebu.CARPETA (id_carpeta);
@@ -96,21 +96,21 @@ CREATE TABLE Plarpebu.LISTA (
 		id_carpeta int NOT NULL,
 		CONSTRAINT pk_lista PRIMARY KEY (id_lista),
 		CONSTRAINT fk_id_carpeta FOREIGN KEY (id_carpeta) REFERENCES Plarpebu.CARPETA (id_carpeta),
-		CONSTRAINT ctl_nombre_carpeta UNIQUE (id_carpeta,nombreLista)
+		CONSTRAINT ctl_nombreLista_carpeta UNIQUE (id_carpeta,nombreLista)
 );
 
 DROP TABLE IF EXISTS Plarpebu.SE_REPR;
 CREATE TABLE Plarpebu.SE_REPR (
 		num_orden int NOT NULL,
 		id_lista int NOT NULL,
-		id_ecualizacion int,
+		id_ecualizacion int DEFAULT NULL,
 		path_tema varchar(40) NOT NULL,
 		CONSTRAINT pk_se_repr PRIMARY KEY (id_lista,num_orden),
 		CONSTRAINT fk_id_ecualizacion FOREIGN KEY (id_ecualizacion) REFERENCES Plarpebu.ECUALIZACION (id_ecualizacion),
 		CONSTRAINT fk_num_orden FOREIGN KEY (num_orden) REFERENCES Plarpebu.ORDEN (num_orden),
 		CONSTRAINT fk_path_tema FOREIGN KEY (path_tema) REFERENCES Plarpebu.TEMA (path_tema),
-		CONSTRAINT fk_id_lista FOREIGN KEY (id_lista) REFERENCES Plarpebu.LISTA (id_lista),
-		CONSTRAINT ctl_num_orden CHECK (num_orden>0)
+		CONSTRAINT fk_id_lista FOREIGN KEY (id_lista) REFERENCES Plarpebu.LISTA (id_lista)
+		--CONSTRAINT ctl_num_orden CHECK (num_orden>0)
 );
 
 CREATE SEQUENCE Plarpebu.perfil_id_seq MINVALUE 1;
@@ -140,7 +140,6 @@ CREATE TABLE Plarpebu.USUARIO (
 ALTER TABLE Plarpebu.USUARIO ADD CONSTRAINT fk_id_perfil FOREIGN KEY (id_perfil) REFERENCES Plarpebu.PERFIL (id_perfil);
 ALTER TABLE Plarpebu.PERFIL ADD CONSTRAINT fk_id_usuario FOREIGN KEY (id_usuario) REFERENCES Plarpebu.USUARIO (id_usuario);
 
-
 DROP TABLE IF EXISTS Plarpebu.USA;
 CREATE TABLE Plarpebu.USA (
 		id_perfil int,
@@ -160,6 +159,15 @@ CREATE TABLE Plarpebu.LISTAELIMINADA (
 		CONSTRAINT pk_listaEliminada PRIMARY KEY (id_listaEliminada)
 );
 
---CREATE UNIQUE INDEX indice_fecha ON Plarpebu.LISTAELIMINADA (fecha ASC);
---CREATE UNIQUE INDEX indice_usuario ON Plarpebu.LISTAELIMINADA (usuario ASC);
---CREATE UNIQUE INDEX indice_id_lista ON Plarpebu.LISTAELIMINADA (id_lista ASC);
+-- funcion auditoria que guarda la lista eliminada, la fecha y el usuario que la elimino
+
+CREATE FUNCTION funcion_auditoria() returns opaque as 'begin INSERT INTO Plarpebu.LISTAELIMINADA (id_lista,fecha,usuario) VALUES 
+(old.id_lista,now(),user);
+return null;
+end;'
+LANGUAGE 'plpgsql';
+
+-- creamos el trigget que llama a nuestra funcion auditoria
+
+CREATE TRIGGER trigger_funcion_auditoria AFTER DELETE ON Plarpebu.LISTA FOR EACH ROW
+	EXECUTE PROCEDURE funcion_auditoria();
